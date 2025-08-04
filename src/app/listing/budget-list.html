@@ -1,0 +1,27 @@
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Budgets</h3>
+    <a routerLink="/budget-add" class="btn btn-primary">+ Add Budget</a>
+  </div>
+
+  @if (budgets.length === 0) {
+    <div class="text-muted">No budgets yet.</div>
+  }
+
+  @for (b of budgets; track b) {
+    <div class="card mb-2 p-2 position-relative">
+      <div>
+        <strong>{{ b.month }}, {{ b.year }}:</strong> {{ b.amount | number: '1.2-2' }}
+      </div>
+      <button class="btn btn-sm btn-light position-absolute top-0 end-0" (click)="toggleMenu(b)">⋮</button>
+
+      @if (b.showMenu) {
+        <div class="position-absolute bg-white border rounded shadow-sm"
+             style="top: 30px; right: 10px; z-index: 10; width: 120px;">
+          <button class="btn btn-sm w-100 text-start" (click)="editBudget(b)">Edit</button>
+          <button class="btn btn-sm w-100 text-start text-danger" (click)="deleteBudget(b)">Delete</button>
+        </div>
+      }
+    </div>
+  }
+</div>

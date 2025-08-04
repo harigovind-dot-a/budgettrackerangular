@@ -1,0 +1,50 @@
+<div class="container mt-3">
+  @if (isEditMode) {
+    <h3>Edit Budget</h3>
+  } @else {
+    <h3>Add a Budget</h3>
+  }
+
+  <form (ngSubmit)="saveBudget()">
+    <div class="mb-3">
+      <label>Month</label>
+      <select class="form-select" [(ngModel)]="budget.month" name="month" required>
+        <option disabled value="">-- Select Month --</option>
+        @for (m of months; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Year</label>
+      <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="budget.year"
+        name="year"
+        required
+        min="1900"
+        max="2200"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label>Amount</label>
+      <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="budget.amount"
+        name="amount"
+        required
+      />
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">Back</button>
+      <button type="submit" class="btn btn-success">
+        {{ isEditMode ? 'Update' : 'Add Budget' }}
+      </button>
+    </div>
+  </form>
+</div>

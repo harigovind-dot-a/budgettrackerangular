@@ -1,0 +1,21 @@
+<div class="container mt-4">
+  <h4>Add a Category</h4>
+  <form (ngSubmit)="saveCategory()">
+    <div class="mb-3">
+      <label for="categoryInput" class="form-label">Category</label>
+      <input
+        id="categoryInput"
+        type="text"
+        class="form-control"
+        placeholder="e.g. Food, Travel, Rent, Salary"
+        [(ngModel)]="categoryName"
+        name="categoryName"
+        required
+      />
+    </div>
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-success" type="submit">Add Category</button>
+      <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+    </div>
+  </form>
+</div>
