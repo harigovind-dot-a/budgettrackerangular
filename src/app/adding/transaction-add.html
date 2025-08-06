@@ -16,7 +16,7 @@
       <select class="form-select" [(ngModel)]="transaction.category" name="category" required>
         <option disabled selected value="">-- Select Category --</option>
         @for (cat of categories; track cat) {
-          <option [value]="cat.name">{{ cat.name }}</option>
+          <option [value]="cat.id">{{ cat.name }}</option>
         }
       </select>
     </div>
@@ -25,8 +25,8 @@
       <label>Transaction Type</label>
       <select class="form-select" [(ngModel)]="transaction.type" name="type" required>
         <option disabled selected value="">-- Select Type --</option>
-        <option value="Income">Income</option>
-        <option value="Expense">Expense</option>
+        <option value="1">Income</option>
+        <option value="2">Expense</option>
       </select>
     </div>
 

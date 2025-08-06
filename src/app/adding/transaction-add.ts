@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Api } from '../services/api';
 
 @Component({
   selector: 'app-transaction-add',
+  standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './transaction-add.html'
 })
@@ -20,32 +22,51 @@ export class TransactionAdd implements OnInit {
   categories: any[] = [];
   isEditMode: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private api: Api, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.categories = JSON.parse(localStorage.getItem('categories') || '[]');
-    const editTx = localStorage.getItem('editTransaction');
-    if (editTx) {
-      this.transaction = JSON.parse(editTx);
-      this.isEditMode = true;
-    }
+    this.api.getAllCategories().subscribe({
+      next: (data: any) => {
+        this.categories = data;
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+      }
+    });
+    this.route.queryParams.subscribe(params => {
+      const id = +params['id'];
+      if (id) {
+        this.isEditMode = true;
+        this.api.getTransactions(id).subscribe({
+          next: data => this.transaction = data,
+          error: () => this.isEditMode = false
+        });
+      }
+    });
   }
 
   saveTransaction() {
-    let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    if (!this.transaction.date || !this.transaction.category || !this.transaction.type || !this.transaction.amount) return;
 
-    if (this.isEditMode) {
-      const old = JSON.parse(localStorage.getItem('editTransaction') || '{}');
-      transactions = transactions.map((t: any) =>
-        t === old ? this.transaction : t
-      );
-      localStorage.removeItem('editTransaction');
+    const tr = {
+      ...this.transaction,
+      category: Number(this.transaction.category),
+      type: Number(this.transaction.type)
+    };
+
+    if (this.isEditMode && this.transaction.id) {
+      this.api.updateTransaction(this.transaction.id, tr).subscribe({
+        next: () => {
+          this.router.navigate(['/transaction-list']);
+        },
+        error: (err) => console.error('Update failed', err)
+      });
     } else {
-      transactions.push(this.transaction);
+      this.api.addTransaction(tr).subscribe({
+        next: () => this.router.navigate(['/transaction-list']),
+        error: (err) => console.error('Add failed', err)
+      });
     }
-
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    this.router.navigate(['/transaction-list']);
   }
 
   goBack() {

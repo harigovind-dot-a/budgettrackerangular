@@ -1,24 +1,29 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Api } from '../services/api';
 
 @Component({
   selector: 'app-category-list',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [RouterLink, CommonModule],
   templateUrl: './category-list.html'
 })
 export class CategoryList {
   categories: { name: string }[] = [];
   dropdownOpen: any = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private api: Api) {}
 
   ngOnInit() {
     this.loadCategories();
   }
 
   loadCategories() {
-    const data = localStorage.getItem('categories');
-    this.categories = data ? JSON.parse(data) : [];
+    this.api.getAllCategories().subscribe({
+      next: (data: any) => this.categories = data,
+      error: (err) => console.error('Failed to load categories', err)
+    });
   }
 
   toggleDropdown(category: any) {
@@ -34,12 +39,13 @@ export class CategoryList {
   }
 
   editCategory(category: any) {
-    localStorage.setItem('editCategory', JSON.stringify(category));
-    this.router.navigate(['/category-add']);
+    this.router.navigate(['/category-add'], { queryParams: { id: category.id } });
   }
 
   deleteCategory(category: any) {
-    this.categories = this.categories.filter(c => c.name !== category.name);
-    localStorage.setItem('categories', JSON.stringify(this.categories));
+    this.api.deleteCategory(category.id).subscribe({
+      next: () => this.loadCategories(),
+      error: (err) => console.error('Delete failed', err)
+    });
   }
 }

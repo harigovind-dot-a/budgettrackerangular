@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Api } from '../services/api';
 
 @Component({
   selector: 'app-transaction-list',
@@ -10,14 +11,38 @@ import { Router, RouterLink } from '@angular/router';
 export class TransactionList {
   transactions: any[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private api: Api) {}
 
   ngOnInit() {
-    this.loadTransactions();
+    this.api.getAllCategories().subscribe((catList: any) => {
+      const categoryMap = new Map<number, string>();
+      catList.forEach((c: any) => categoryMap.set(c.id, c.name));
+
+      this.api.getAllTransactions().subscribe((txList: any) => {
+        this.transactions = txList.map((tx: any) => {
+          const dateObj = new Date(tx.date);
+
+          return {
+            ...tx,
+            formattedDate: dateObj.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }),
+            typeLabel: tx.type === 1 ? 'Income' : 'Expense',
+            categoryName: categoryMap.get(tx.category) || 'Unknown'
+          };
+        });
+      });
+    });
   }
 
+
   loadTransactions() {
-    this.transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    this.api.getAllTransactions().subscribe({
+      next: (data: any) => this.transactions = data,
+      error: (err) => console.error('Failed to load transactions', err)
+    });
   }
 
   toggleMenu(tx: any) {
@@ -32,13 +57,13 @@ export class TransactionList {
   }
 
   editTransaction(tx: any) {
-    localStorage.setItem('editTransaction', JSON.stringify(tx));
-    this.router.navigate(['/transaction-add']);
+    this.router.navigate(['/transaction-add'], { queryParams: { id: tx.id } });
   }
 
   deleteTransaction(tx: any) {
-    const all = this.transactions.filter(t => t !== tx);
-    localStorage.setItem('transactions', JSON.stringify(all));
-    this.loadTransactions();
+    this.api.deleteTransaction(tx.id).subscribe({
+      next: () => this.loadTransactions(),
+      error: (err) => console.error('Delete failed', err)
+    });
   }
 }

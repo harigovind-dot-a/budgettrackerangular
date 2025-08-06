@@ -11,8 +11,8 @@
   @for (tx of transactions; track tx) {
     <div class="card mb-2 p-2 position-relative">
       <div>
-        <strong>{{ tx.date }} - {{ tx.type }} - {{ tx.amount | number:'1.2-2' }}</strong>
-        <div class="text-muted small">({{ tx.category }})</div>
+        <strong>{{ tx.formattedDate }} - {{ tx.typeLabel }} - {{ tx.amount | number:'1.2-2' }}</strong>
+        <div class="text-muted small">({{ tx.categoryName }})</div>
       </div>
       <button class="btn btn-sm btn-light position-absolute top-0 end-0" (click)="toggleMenu(tx)">⋮</button>
 

@@ -1,0 +1,60 @@
+<div class="container mt-4">
+  <h3>Monthly Budget Summary</h3>
+
+  <form (ngSubmit)="getSummary()" class="mb-4">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label>Month</label>
+        <select class="form-select" [(ngModel)]="selectedMonth" name="month" required>
+          <option disabled value="">-- Select Month --</option>
+          @for (m of months; track m) {
+            <option [value]="m">{{ m }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label>Year</label>
+        <input type="number" class="form-control" [(ngModel)]="selectedYear" name="year" required min="1900" max="2200" />
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button class="btn btn-primary" type="submit">Get Summary</button>
+    </div>
+  </form>
+
+  @if (errorMessage) {
+    <div class="alert alert-warning">{{ errorMessage }}</div>
+  }
+
+  @if (summaryData) {
+    <div class="card mt-4">
+        <div class="card-header">
+        <strong>Summary for {{ summaryData['month and year'] }}</strong>
+        </div>
+        <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-6"><strong>Budget</strong></div>
+            <div class="col-6">{{ summaryData.budget_amount | number: '1.2-2' }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6"><strong>Total Income</strong></div>
+            <div class="col-6">{{ summaryData.income_total | number: '1.2-2' }}</div>
+        </div>
+        <div div class="row mb-2">
+            <div class="col-6"><strong>Total Expense</strong></div>
+            <div class="col-6">{{ summaryData.expense_total | number: '1.2-2' }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6"><strong>Net Savings</strong></div>
+            <div class="col-6">{{ summaryData.net_savings | number: '1.2-2' }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6"><strong>Remaining Budget</strong></div>
+            <div class="col-6">{{ summaryData.remaining_budget | number: '1.2-2' }}</div>
+        </div>
+        </div>
+    </div>
+  }
+</div>

@@ -1,23 +1,39 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Api } from '../services/api';
 
 @Component({
   selector: 'app-budget-list',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './budget-list.html'
 })
-export class BudgetList {
+export class BudgetList implements OnInit{
   budgets: any[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private api: Api) {}
 
   ngOnInit() {
     this.loadBudgets();
   }
 
+  getMonthName(monthNumber: number): string {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[monthNumber - 1];
+  }
   loadBudgets() {
-    this.budgets = JSON.parse(localStorage.getItem('budgets') || '[]');
+    this.api.getAllBudgets().subscribe({
+      next: (data: any) => {
+        this.budgets = data.map((b: any) => ({
+          ...b, month: this.getMonthName(b.month)
+        }));
+      },
+      error: (err) => console.error('Failed to load budgets', err)
+    });
   }
 
   toggleMenu(budget: any) {
@@ -32,13 +48,13 @@ export class BudgetList {
   }
 
   editBudget(budget: any) {
-    localStorage.setItem('editBudget', JSON.stringify(budget));
-    this.router.navigate(['/budget-add']);
+    this.router.navigate(['/budget-add'], { queryParams: { id: budget.id } });
   }
 
   deleteBudget(budget: any) {
-    const all = this.budgets.filter(b => b !== budget);
-    localStorage.setItem('budgets', JSON.stringify(all));
-    this.loadBudgets();
+    this.api.deleteBudget(budget.id).subscribe({
+      next: () => this.loadBudgets(),
+      error: (err) => console.error('Delete failed', err)
+    });
   }
 }

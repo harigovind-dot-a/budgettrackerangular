@@ -1,42 +1,54 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Api } from '../services/api';
 
 @Component({
   selector: 'app-category-add',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './category-add.html'
 })
-export class CategoryAdd {
+export class CategoryAdd implements OnInit{
   categoryName: string = '';
   isEditMode: boolean = false;
+  categoryId: number | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private api: Api, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const editData = localStorage.getItem('editCategory');
-    if (editData) {
-      const category = JSON.parse(editData);
-      this.categoryName = category.name;
-      this.isEditMode = true;
-    }
+    this.route.queryParams.subscribe(params => {
+      const id = +params['id'];
+      if (id) {
+        this.isEditMode = true;
+        this.api.getCategory(id).subscribe({
+          next: (data:any) => {
+            this.categoryName = data.name;
+            this.categoryId = data.id;
+          },
+          error: () => this.isEditMode = false
+        });
+      }
+    });
   }
   
   saveCategory() {
-    let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const ct = { name: this.categoryName };
 
-    if (this.isEditMode) {
-      const oldCategory = JSON.parse(localStorage.getItem('editCategory') || '{}');
-      categories = categories.map((c: any) =>
-        c.name === oldCategory.name ? { name: this.categoryName } : c
-      );
-      localStorage.removeItem('editCategory');
+    if (this.isEditMode && this.categoryId != null) {
+      this.api.updateCategory(this.categoryId, ct).subscribe({
+        next: () => {
+          this.router.navigate(['/category-list']);
+        },
+        error: (err) => console.error('Update failed', err)
+      });
     } else {
-      categories.push({ name: this.categoryName });
+      this.api.addCategory(ct).subscribe({
+        next: () => this.router.navigate(['/category-list']),
+        error: (err) => console.error('Add failed', err)
+      });
     }
-    localStorage.setItem('categories', JSON.stringify(categories));
-    this.router.navigate(['/category-list']);
   }
 
   goBack() {

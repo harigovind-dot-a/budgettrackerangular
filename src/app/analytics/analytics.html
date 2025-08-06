@@ -1,0 +1,38 @@
+<div class="container mt-3">
+  <h3>Analytics</h3>
+
+  <form (ngSubmit)="getAnalytics()">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label>Month</label>
+        <select class="form-select" [(ngModel)]="selectedMonth" name="month" required>
+          <option value="" disabled>-- Select Month --</option>
+          @for (m of months; track m) {
+            <option [value]="m">{{ m }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label>Year</label>
+        <input class="form-control" type="number" name="year" [(ngModel)]="selectedYear" required min="1900" max="2200" />
+      </div>
+
+      <div class="col-md-4">
+        <label>Type</label>
+        <select class="form-select" [(ngModel)]="selectedType" name="type" required>
+          <option value="INCOME">Income</option>
+          <option value="EXPENSE">Expense</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">View Chart</button>
+  </form>
+
+  @if (errorMessage) {
+    <div class="alert alert-warning mt-3">{{ errorMessage }}</div>
+  }
+
+  <canvas *ngIf="!errorMessage" id="analyticsChart" class="mt-4" width="400" height="400"></canvas>
+</div>
