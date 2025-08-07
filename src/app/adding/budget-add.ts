@@ -15,7 +15,7 @@ export class BudgetAdd implements OnInit {
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
-
+  errorMessage: string = '';
   budget: any = {
     month: '',
     year: null,
@@ -50,8 +50,17 @@ export class BudgetAdd implements OnInit {
   }
 
   saveBudget() {
-    if (!this.budget.month || !this.budget.year || !this.budget.amount) return;
-
+    this.errorMessage = "";
+    if (!this.budget.month || !this.budget.year || !this.budget.amount) {
+      this.errorMessage = 'All fields (month, year, and amount) are required.';
+      return;
+    } else if (this.budget.year < 1900 || this.budget.year >2200) {
+      this.errorMessage = 'Year should be between 1900 and 2200';
+      return;
+    } else if (this.budget.amount < 0.01){
+      this.errorMessage = 'Enter a valid number above 0.01';
+      return;
+    }
     const monthindex = this.months.indexOf(this.budget.month);
     if (monthindex === -1) return;
     const bg = {
@@ -64,12 +73,12 @@ export class BudgetAdd implements OnInit {
         next: () => {
           this.router.navigate(['/budget-list']);
         },
-        error: (err) => console.error('Update Failed', err)
+        error: (err) => this.errorMessage = 'Update Failed'
       });
     } else {
       this.api.addBudgets(bg).subscribe({
         next: () => this.router.navigate(['/budget-list']),
-        error: (err) => console.error('Add Failed', err)
+        error: (err) => this.errorMessage = 'Add Failed'
       });
     }
   }

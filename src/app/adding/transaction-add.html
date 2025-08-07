@@ -39,7 +39,11 @@
       <label>Description (optional)</label>
       <input type="text" class="form-control" [(ngModel)]="transaction.description" name="description" />
     </div>
-
+    @if (errorMessage) {
+      <div class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+    }
     <div class="d-flex justify-content-between">
       <button type="button" class="btn btn-secondary" (click)="goBack()">Back</button>
       <button type="submit" class="btn btn-success">

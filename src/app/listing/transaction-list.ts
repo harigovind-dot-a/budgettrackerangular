@@ -5,20 +5,30 @@ import { Api } from '../services/api';
 
 @Component({
   selector: 'app-transaction-list',
-  imports:[RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule],
   templateUrl: './transaction-list.html'
 })
 export class TransactionList {
   transactions: any[] = [];
+  categoryMap = new Map<number, string>();
 
   constructor(private router: Router, private api: Api) {}
 
   ngOnInit() {
-    this.api.getAllCategories().subscribe((catList: any) => {
-      const categoryMap = new Map<number, string>();
-      catList.forEach((c: any) => categoryMap.set(c.id, c.name));
+    this.loadCategoriesAndTransactions();
+  }
 
-      this.api.getAllTransactions().subscribe((txList: any) => {
+  loadCategoriesAndTransactions() {
+    this.api.getAllCategories().subscribe((catList: any) => {
+      this.categoryMap.clear();
+      catList.forEach((c: any) => this.categoryMap.set(c.id, c.name));
+      this.loadTransactions();
+    });
+  }
+
+  loadTransactions() {
+    this.api.getAllTransactions().subscribe({
+      next: (txList: any) => {
         this.transactions = txList.map((tx: any) => {
           const dateObj = new Date(tx.date);
 
@@ -30,17 +40,10 @@ export class TransactionList {
               day: 'numeric'
             }),
             typeLabel: tx.type === 1 ? 'Income' : 'Expense',
-            categoryName: categoryMap.get(tx.category) || 'Unknown'
+            categoryName: this.categoryMap.get(tx.category) || 'Unknown'
           };
         });
-      });
-    });
-  }
-
-
-  loadTransactions() {
-    this.api.getAllTransactions().subscribe({
-      next: (data: any) => this.transactions = data,
+      },
       error: (err) => console.error('Failed to load transactions', err)
     });
   }
@@ -61,6 +64,8 @@ export class TransactionList {
   }
 
   deleteTransaction(tx: any) {
+    const confirmed = confirm(`Do you really want to delete this transaction?`);
+    if (!confirmed) return;
     this.api.deleteTransaction(tx.id).subscribe({
       next: () => this.loadTransactions(),
       error: (err) => console.error('Delete failed', err)

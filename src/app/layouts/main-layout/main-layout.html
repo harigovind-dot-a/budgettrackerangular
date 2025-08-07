@@ -1,0 +1,42 @@
+<div 
+  class="sidebar-backdrop"
+  *ngIf="isSidebarVisible && isMobileView()"
+  (click)="closeSidebar()">
+</div>
+
+<div 
+  class="sidebar"
+  (click)="$event.stopPropagation()"
+  [ngClass]="{
+    'show': isSidebarVisible || !isMobileView()
+  }">
+  <div class="d-flex flex-column h-100">
+    <div>
+        <h5 class="mb-5 text-center">Menu</h5>
+        <div class="d-grid gap-4">
+            <a class="btn btn-outline-dark" routerLink="/category-list" (click)="closeSidebar()">Categories</a>
+            <a class="btn btn-outline-dark" routerLink="/transaction-list" (click)="closeSidebar()">Transactions</a>
+            <a class="btn btn-outline-dark" routerLink="/budget-list" (click)="closeSidebar()">Budgets</a>
+            <a class="btn btn-outline-success" routerLink="/summary" (click)="closeSidebar()">Summary</a>
+            <a class="btn btn-outline-success" routerLink="/analytics" (click)="closeSidebar()">Analytics</a>
+        </div>
+        </div>
+        <div class="mt-auto p-3">
+            <button class="btn btn-danger w-100" (click)="logout()">Logout</button>
+        </div>
+    </div>
+  </div>
+<div 
+  class="content-container"
+  [class.content-shifted]="isSidebarVisible && !isMobileView()"
+  (click)="closeSidebarIfMobile()">
+  
+  <nav class="navbar navbar-dark bg-dark border-bottom shadow-sm px-3">
+    <button class="btn btn-outline-secondary d-md-none me-3" (click)="onHamburgerClick($event)">☰</button>
+    <span class="navbar-brand mx-auto">Budget Tracker</span>
+  </nav>
+
+  <div class="p-4">
+    <router-outlet></router-outlet>
+  </div>
+</div>

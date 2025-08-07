@@ -23,8 +23,18 @@ export class Summary {
     constructor(private api: Api) {}
 
     getSummary() {
+        this.errorMessage = "";
         const yearNum = Number(this.selectedYear);
         const monthIndex = this.months.indexOf(this.selectedMonth) + 1;
+
+        if(!this.selectedMonth || !this.selectedYear){
+            this.errorMessage = 'Field cannot be empty';
+            return;
+        } else if (yearNum < 1900 || yearNum > 2200) {
+            this.errorMessage = 'Year should be in between 1900 and 2200';
+            return;
+        }
+
         this.api.getBudgetSummary(monthIndex, yearNum).subscribe({
             next: (data) => {
                 this.summaryData = data;

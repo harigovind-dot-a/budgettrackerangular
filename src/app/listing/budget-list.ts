@@ -52,6 +52,8 @@ export class BudgetList implements OnInit{
   }
 
   deleteBudget(budget: any) {
+    const confirmed = confirm(`Do you really want to delete this budget?`);
+    if (!confirmed) return;
     this.api.deleteBudget(budget.id).subscribe({
       next: () => this.loadBudgets(),
       error: (err) => console.error('Delete failed', err)

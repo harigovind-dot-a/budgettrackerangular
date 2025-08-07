@@ -27,9 +27,20 @@ export class Analytics {
     constructor(private api: Api) {}
 
     getAnalytics() {
+        this.errorMessage = "";
+
         const year = Number(this.selectedYear);
         const monthIndex = this.months.indexOf(this.selectedMonth) + 1;
         const typeValue = this.selectedType === 'INCOME' ? 1 : 2;
+
+        if (!this.selectedMonth || !this.selectedYear || !this.selectedType) {
+            this.errorMessage = 'Fields cannot be empty';
+            return;
+        } else if (year<1900 || year>2200) {
+            this.errorMessage = 'Year should be in between 1900 and 2200'
+            return;
+        }
+
         this.api.getAnalytics(monthIndex, year, typeValue).subscribe({
             next: (data: any) => {
                 if (!data.labels.length) {

@@ -14,6 +14,7 @@ export class CategoryAdd implements OnInit{
   categoryName: string = '';
   isEditMode: boolean = false;
   categoryId: number | null = null;
+  errorMessage: string = '';
 
   constructor(private router: Router, private api: Api, private route: ActivatedRoute) {}
 
@@ -34,19 +35,23 @@ export class CategoryAdd implements OnInit{
   }
   
   saveCategory() {
+    this.errorMessage = "";
+    if(!this.categoryName){
+      this.errorMessage = 'Field cannot be empty';
+      return;
+    }
     const ct = { name: this.categoryName };
-
     if (this.isEditMode && this.categoryId != null) {
       this.api.updateCategory(this.categoryId, ct).subscribe({
         next: () => {
           this.router.navigate(['/category-list']);
         },
-        error: (err) => console.error('Update failed', err)
+        error: (err) => this.errorMessage = 'Update Failed'
       });
     } else {
       this.api.addCategory(ct).subscribe({
         next: () => this.router.navigate(['/category-list']),
-        error: (err) => console.error('Add failed', err)
+        error: (err) => this.errorMessage = 'Add Failed'
       });
     }
   }

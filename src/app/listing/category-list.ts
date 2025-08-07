@@ -43,6 +43,8 @@ export class CategoryList {
   }
 
   deleteCategory(category: any) {
+    const confirmed = confirm(`Do you really want to delete this category?`);
+    if (!confirmed) return;
     this.api.deleteCategory(category.id).subscribe({
       next: () => this.loadCategories(),
       error: (err) => console.error('Delete failed', err)

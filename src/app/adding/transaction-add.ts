@@ -18,7 +18,7 @@ export class TransactionAdd implements OnInit {
     amount: null,
     description: ''
   };
-
+  errorMessage: string = '';
   categories: any[] = [];
   isEditMode: boolean = false;
 
@@ -46,7 +46,21 @@ export class TransactionAdd implements OnInit {
   }
 
   saveTransaction() {
-    if (!this.transaction.date || !this.transaction.category || !this.transaction.type || !this.transaction.amount) return;
+    this.errorMessage = "";
+
+    const date = new Date(this.transaction.date);
+    const minDate = new Date('1900-01-01');
+    const maxDate = new Date('2199-12-31');
+    if (!this.transaction.date || !this.transaction.category || !this.transaction.type || !this.transaction.amount) {
+      this.errorMessage = 'Field cannot be empty. All are required.';
+      return;
+    } else if (this.transaction.amount < 0.01) {
+      this.errorMessage = 'Enter a valid amount greater than 0.01';
+      return;
+    } else if (date < minDate || date > maxDate) {
+      this.errorMessage = 'Enter a valid date between 01-01-1900 and 12-31-2199.';
+      return;
+    }
 
     const tr = {
       ...this.transaction,
@@ -59,12 +73,12 @@ export class TransactionAdd implements OnInit {
         next: () => {
           this.router.navigate(['/transaction-list']);
         },
-        error: (err) => console.error('Update failed', err)
+        error: (err) => this.errorMessage = 'Update Failed'
       });
     } else {
       this.api.addTransaction(tr).subscribe({
         next: () => this.router.navigate(['/transaction-list']),
-        error: (err) => console.error('Add failed', err)
+        error: (err) => this.errorMessage = 'Add Failed'
       });
     }
   }
