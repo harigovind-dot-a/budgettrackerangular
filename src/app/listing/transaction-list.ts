@@ -11,8 +11,15 @@ import { Api } from '../services/api';
 export class TransactionList {
   transactions: any[] = [];
   categoryMap = new Map<number, string>();
+  overBudget: boolean = false;
+  selectedMonth: number;
+  selectedYear: number;
 
-  constructor(private router: Router, private api: Api) {}
+  constructor(private router: Router, private api: Api) {
+    const current = new Date();
+    this.selectedMonth = current.getMonth() + 1;
+    this.selectedYear = current.getFullYear();
+  }
 
   ngOnInit() {
     this.loadCategoriesAndTransactions();
@@ -29,9 +36,16 @@ export class TransactionList {
   loadTransactions() {
     this.api.getAllTransactions().subscribe({
       next: (txList: any) => {
+        let totalExpense = 0;
         this.transactions = txList.map((tx: any) => {
           const dateObj = new Date(tx.date);
-
+          if (
+            tx.type === 2 &&
+            dateObj.getMonth() + 1 === this.selectedMonth &&
+            dateObj.getFullYear() === this.selectedYear
+          ) {
+            totalExpense += Number(tx.amount);
+          }
           return {
             ...tx,
             formattedDate: dateObj.toLocaleDateString('en-US', {
@@ -43,8 +57,18 @@ export class TransactionList {
             categoryName: this.categoryMap.get(tx.category) || 'Unknown'
           };
         });
+        this.checkBudget(totalExpense);
       },
       error: (err) => console.error('Failed to load transactions', err)
+    });
+  }
+
+  checkBudget(totalExpense: number) {
+    this.api.getBudgetSummary(this.selectedMonth, this.selectedYear).subscribe({
+      next: (summary: any) => {
+        this.overBudget = totalExpense > summary.budget_amount;
+      },
+      error: () => this.overBudget = false
     });
   }
 

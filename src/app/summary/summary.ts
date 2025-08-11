@@ -46,4 +46,23 @@ export class Summary {
             }
         });
     }
+    downloadCSV() {
+        if (!this.summaryData) return;
+        const data = this.summaryData;
+        const csvRows = [
+            ['Month and Year', data['month and year']],
+            ['Budget', data.budget_amount],
+            ['Total Income', data.income_total],
+            ['Total Expense', data.expense_total],
+            ['Net Savings', data.net_savings],
+            ['Remaining Budget', data.remaining_budget]
+        ];
+        const csv = csvRows.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `summary-${data['month and year']}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+    }
 }
