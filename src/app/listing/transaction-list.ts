@@ -56,7 +56,7 @@ export class TransactionList {
             typeLabel: tx.type === 1 ? 'Income' : 'Expense',
             categoryName: this.categoryMap.get(tx.category) || 'Unknown'
           };
-        });
+        }).sort((a:any, b:any) => new Date(b.date).getTime() - new Date(a.date).getTime());;
         this.checkBudget(totalExpense);
       },
       error: (err) => console.error('Failed to load transactions', err)

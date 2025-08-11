@@ -30,7 +30,7 @@ export class BudgetList implements OnInit{
       next: (data: any) => {
         this.budgets = data.map((b: any) => ({
           ...b, month: this.getMonthName(b.month)
-        }));
+        })).sort((a: any, b: any) => b.year - a.year || (new Date(`${b.month} 1`).getMonth() - new Date(`${a.month} 1`).getMonth()));
       },
       error: (err) => console.error('Failed to load budgets', err)
     });

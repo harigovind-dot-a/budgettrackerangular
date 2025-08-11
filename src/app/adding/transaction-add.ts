@@ -52,7 +52,7 @@ export class TransactionAdd implements OnInit {
     const minDate = new Date('1900-01-01');
     const maxDate = new Date('2199-12-31');
     if (!this.transaction.date || !this.transaction.category || !this.transaction.type || !this.transaction.amount) {
-      this.errorMessage = 'Field cannot be empty. All are required.';
+      this.errorMessage = 'Fields except optional cannot be empty.';
       return;
     } else if (this.transaction.amount < 0.01) {
       this.errorMessage = 'Enter a valid amount greater than 0.01';

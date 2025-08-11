@@ -32,7 +32,7 @@
 
   @if (errorMessage) {
     <div class="alert alert-warning mt-3">{{ errorMessage }}</div>
+  } @else {
+    <canvas id="analyticsChart" class="mt-4" width="400" height="400"></canvas>
   }
-
-  <canvas *ngIf="!errorMessage" id="analyticsChart" class="mt-4" width="400" height="400"></canvas>
 </div>

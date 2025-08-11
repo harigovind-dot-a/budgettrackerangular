@@ -1,5 +1,64 @@
-<div class="text-center mt-5">
-  <h1 class="display-4">Welcome to Budget Tracker</h1>
-  <p class="lead mt-3">Use the sidebar to navigate through <strong>Categories</strong>, <strong>Transactions</strong>, and <strong>Budgets</strong>.</p>
-  <p class="lead">You can also view a <strong>Summary</strong> of your spending and <strong>Visualize</strong> the budget usage over time.</p>
+<div class="container-fluid p-3">
+  <h4>Hi, {{ username }}</h4>
+  <h3 class="text-muted">This month in a glance</h3>
+
+  @if (overBudget){
+    <div class="alert alert-danger mb-3">
+      ⚠️ Expenses for this month exceed the set budget. Check the remaining budget in Summary.
+    </div>
+  }
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Your spendings</h5>
+        <canvas id="spendingChart"></canvas>
+        @if (!spendings) {
+          <div class="text-muted small">Spending chart is not available.</div>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Your earnings</h5>
+        <canvas id="earningChart"></canvas>
+        @if (!earnings) {
+          <div class="text-muted small">Earning chart is not available.</div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <h5>Summary</h5>
+    @if (summary) {
+      <table class="table table-bordered mt-2">
+        <tbody>
+          <tr>
+            <th>Budget</th>
+            <td>{{ summary.budget_amount | number: '1.2-2' }}</td>
+          </tr>
+          <tr>
+            <th>Total Income</th>
+            <td>{{ summary.income_total | number: '1.2-2' }}</td>
+          </tr>
+          <tr>
+            <th>Total Expense</th>
+            <td>{{ summary.expense_total | number: '1.2-2' }}</td>
+          </tr>
+          <tr>
+            <th>Net Savings</th>
+            <td>{{ summary.net_savings | number: '1.2-2' }}</td>
+          </tr>
+          <tr>
+            <th>Remaining Budget</th>
+            <td>{{ summary.remaining_budget | number: '1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    } @else {
+      <div class="text-muted">No summary available</div>
+    }
+  </div>
 </div>

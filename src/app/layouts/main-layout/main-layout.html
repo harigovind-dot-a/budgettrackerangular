@@ -1,8 +1,9 @@
-<div 
-  class="sidebar-backdrop"
-  *ngIf="isSidebarVisible && isMobileView()"
-  (click)="closeSidebar()">
-</div>
+@if (isSidebarVisible && isMobileView()) {
+  <div 
+    class="sidebar-backdrop"
+    (click)="closeSidebar()">
+  </div>
+}
 
 <div 
   class="sidebar"
@@ -14,6 +15,7 @@
     <div>
         <h5 class="mb-5 text-center">Menu</h5>
         <div class="d-grid gap-4">
+            <a class="btn btn-outline-dark" routerLink="/landingpage" (click)="closeSidebar()">Dashboard</a>
             <a class="btn btn-outline-dark" routerLink="/category-list" (click)="closeSidebar()">Categories</a>
             <a class="btn btn-outline-dark" routerLink="/transaction-list" (click)="closeSidebar()">Transactions</a>
             <a class="btn btn-outline-dark" routerLink="/budget-list" (click)="closeSidebar()">Budgets</a>
@@ -31,7 +33,7 @@
   [class.content-shifted]="isSidebarVisible && !isMobileView()"
   (click)="closeSidebarIfMobile()">
   
-  <nav class="navbar navbar-dark bg-dark border-bottom shadow-sm px-3">
+  <nav class="navbar navbar-dark bg-dark border-bottom shadow-sm px-3 sticky-top">
     <button class="btn btn-outline-secondary d-md-none me-3" (click)="onHamburgerClick($event)">☰</button>
     <span class="navbar-brand mx-auto">Budget Tracker</span>
   </nav>

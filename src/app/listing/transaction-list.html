@@ -4,7 +4,7 @@
     <a routerLink="/transaction-add" class="btn btn-primary">+ Add Transaction</a>
   </div>
   @if (overBudget) {
-    <div class="alert alert-danger sticky-top" style="z-index: 1000;">
+    <div class="alert alert-danger" style="z-index: 1000;">
       ⚠️ Expenses for {{ selectedMonth }}/{{ selectedYear }} exceeded the set budget.
     </div>
   }

@@ -21,7 +21,7 @@ export class CategoryList {
 
   loadCategories() {
     this.api.getAllCategories().subscribe({
-      next: (data: any) => this.categories = data,
+      next: (data: any) => this.categories = data.sort((a: any, b: any) => a.name.localeCompare(b.name)),
       error: (err) => console.error('Failed to load categories', err)
     });
   }
